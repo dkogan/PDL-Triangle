@@ -16,7 +16,7 @@ use strict;
 use warnings;
 
 
-=head1 PDL::OpencV
+=head1 PDL::Triangle
 
 PDL::Triangle - PDL interface to the Triangle library
 
