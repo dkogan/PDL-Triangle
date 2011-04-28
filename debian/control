@@ -1,0 +1,15 @@
+Source: libpdl-triangle-perl
+Section: perl
+Priority: optional
+Build-Depends: debhelper (>= 7)
+Build-Depends-Indep: perl
+Maintainer: Dima Kogan <dkogan@cds.caltech.edu>
+Standards-Version: 3.9.1
+
+Package: libpdl-triangle-perl
+Architecture: all
+Depends: ${misc:Depends}, ${perl:Depends}, pdl, libcv2.1
+Description: PDL interface to the Triangle library
+ PDL::Triangle binds the Triangle library from
+ http://www.cs.cmu.edu/~quake/triangle.html
+ This allows PDL to generate 2D triangulations

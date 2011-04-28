@@ -1,0 +1,89 @@
+# -*- cperl -*-
+
+our $VERSION = 0.01;
+use PDL::Exporter;
+
+pp_setversion($VERSION);
+
+
+pp_addhdr('
+#include <triangle.h>
+');
+
+pp_addpm( {At=>'Top'}, <<'EOD');
+
+use strict;
+use warnings;
+
+
+=head1 PDL::OpencV
+
+PDL::Triangle - PDL interface to the Triangle library
+
+=head1 SYNOPSIS
+
+ use PDL::Triangle;
+
+ my $points = pdl[[373.43848, 394.89008],
+                  [394.51451, 404.54714],
+                  [389.38313, 411.53224],
+                  [374.41147, 408.28189],
+                  [315.73474, 416.02049],
+                  [332.95913, 420.29929],
+                  [331.28138, 435.56615],
+                  [316.45139, 423.85713]];
+ my $triangleIndices = triangulate($points);
+
+=head1 DESCRIPTION
+
+blah blah
+
+EOD
+
+
+
+# Here's the main definition. I don't know how many triangles, neighbors, etc
+# I'll have at the start. Thus I RESIZE() my output piddles. PP asks me if I
+# know what I'm doing calling RESIZE(). Can't say that I do...
+
+pp_def("triangulate",
+       HandleBad => 0,
+       Pars => 'double points(point2d=2,n); int [o]vertices(point3d=3,nvertices=1); int [o]neighbors(point3d=3,nvertices); ',
+       Code => <<'EOC',
+  struct triangulateio in = {.pointlist               = $P(points),
+                             .numberofpoints          = $SIZE(n),
+                             .pointattributelist      = NULL,
+                             .numberofpointattributes = 0,
+                             .pointmarkerlist         = NULL};
+
+  struct triangulateio out = {.trianglelist    = NULL,
+                              .neighborlist    = NULL,
+                              .numberofcorners = 3};
+
+  triangulate("QNBPDIOYYzn", &in, &out, NULL);
+
+
+  $RESIZE(nvertices,  out.numberoftriangles);
+
+  memcpy($P(vertices),  out.trianglelist, out.numberoftriangles*3*sizeof(int));
+  memcpy($P(neighbors), out.neighborlist, out.numberoftriangles*3*sizeof(int));
+
+  trifree(out.trianglelist);
+  trifree(out.neighborlist);
+EOC
+
+
+
+      Doc => <<'EOD',
+
+=for ref
+
+ need docs here
+
+=for example
+
+ need example here
+
+EOD
+
+);
